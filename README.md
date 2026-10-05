@@ -53,7 +53,7 @@ Aplicação de terminal em Python para gerenciar clientes, produtos e vendas de 
 ## 📁 Estrutura do repositório
 
 ```
-projeto-vendas/
+sistema_vendas/
 ├── src/
 │   └── main.py         # aplicação (arquivo único)
 ├── database/
@@ -101,6 +101,11 @@ projeto-vendas/
 ```bash
    python src/main.py
 ```
+##  Interface
+-
+-
+-
+-
 
 ## 🎥 Vídeo explicativo
 

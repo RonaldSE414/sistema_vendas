@@ -48,7 +48,7 @@ VS Code
 ## 📁 Estrutura do repositório
 
 ```
-projeto-vendas/
+sistema_vendas/
 │
 ├── src/
 │   └── sistema_vendas.py              # código-fonte da aplicação

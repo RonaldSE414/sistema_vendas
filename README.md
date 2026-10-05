@@ -242,7 +242,7 @@ Tela "Produtos"  →  botão Repor estoque  →  CALL sp_repor_estoque(...)  →
 
 ## 🎥 Vídeo Demostrativo
 
-🔗 **Link do vídeo:  ** 
+🔗 **Link do vídeo: https://drive.google.com/file/d/1cw7ScubP6mJPa8e_FWyvAA3suQHkgdWi/view?usp=sharing  ** 
 
 
 

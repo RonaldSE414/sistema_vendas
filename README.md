@@ -82,7 +82,8 @@ A janela principal possui 5 abas.
 Cadastro de clientes (nome e e-mail), listagem e exclusão.
 
 <!-- 📸 COLE AQUI o print: docs/img/01-clientes.png -->
-![Tela de Clientes](docs/img/01-clientes.png)
+![Tela de Clientes](<img width="1920" height="1020" alt="Captura de tela 2026-10-05 181539" src="https://github.com/user-attachments/assets/1771d3fa-bfa2-40f5-a26c-dd39650e384a" />
+)
 
 ### 2. Produtos
 Cadastro, listagem, exclusão, **edição de nome e preço** (botão ou dois cliques) e **reposição de estoque**. Produtos com estoque baixo aparecem em vermelho.
@@ -90,8 +91,8 @@ Cadastro, listagem, exclusão, **edição de nome e preço** (botão ou dois cli
 - Botão **Repor estoque** → chama a Procedure `sp_repor_estoque`.
 
 <!-- 📸 COLE AQUI os prints: docs/img/02-produtos.png e docs/img/03-editar-produto.png -->
-![Tela de Produtos](docs/img/02-produtos.png)
-![Edição de produto](docs/img/03-editar-produto.png)
+![Tela de Produtos](<img width="1920" height="1020" alt="Captura de tela 2026-10-05 181559" src="https://github.com/user-attachments/assets/250fb762-54fe-493a-8d14-0d52da485b33" />
+)
 
 ### 3. Nova venda (Procedure)
 O usuário escolhe o cliente, adiciona **vários produtos ao carrinho**, informa o desconto e finaliza a venda.
@@ -100,7 +101,8 @@ O usuário escolhe o cliente, adiciona **vários produtos ao carrinho**, informa
 - Ao concluir, o total exibido é calculado pela Function `fn_calcular_total_venda`.
 
 <!-- 📸 COLE AQUI o print: docs/img/04-nova-venda.png -->
-![Tela de Nova venda](docs/img/04-nova-venda.png)
+![Tela de Nova venda](<img width="1920" height="1020" alt="Captura de tela 2026-10-05 181715" src="https://github.com/user-attachments/assets/71c7293e-8079-400c-961b-214f1d1c3fa5" />
+)
 
 ### 4. Relatório (View)
 Lista todas as vendas (cliente, data, quantidade de itens, subtotal e desconto). Com **dois cliques em uma venda**, são exibidos os produtos que a compõem.
@@ -109,8 +111,10 @@ Lista todas as vendas (cliente, data, quantidade de itens, subtotal e desconto).
 - Detalhe da venda → consulta a View `vw_itens_venda`.
 
 <!-- 📸 COLE AQUI os prints: docs/img/05-relatorio.png e docs/img/06-itens-venda.png -->
-![Tela de Relatório](docs/img/05-relatorio.png)
-![Itens de uma venda](docs/img/06-itens-venda.png)
+![Tela de Relatório](<img width="1920" height="1020" alt="Captura de tela 2026-10-05 181741" src="https://github.com/user-attachments/assets/4265f5f0-8d56-49fc-83b5-6bcf792e31fe" />
+)
+![Itens de uma venda](<img width="1920" height="1020" alt="Captura de tela 2026-10-05 183459" src="https://github.com/user-attachments/assets/48b13e8f-8073-4b73-a9bb-d2ff8b231b3a" />
+)
 
 ### 5. Total da venda (Function)
 O usuário escolhe uma venda e o sistema mostra o valor final, já com o desconto aplicado.
@@ -118,7 +122,8 @@ O usuário escolhe uma venda e o sistema mostra o valor final, já com o descont
 - Botão **Calcular total** → chama a Function `fn_calcular_total_venda`.
 
 <!-- 📸 COLE AQUI o print: docs/img/07-total-venda.png -->
-![Tela de Total da venda](docs/img/07-total-venda.png)
+![Tela de Total da venda](<img width="1920" height="1020" alt="Captura de tela 2026-10-05 181803" src="https://github.com/user-attachments/assets/ff496e35-58c9-4394-b0f7-bcd378b87197" />
+)
 
 ---
 
@@ -126,11 +131,6 @@ O usuário escolhe uma venda e o sistema mostra o valor final, já com o descont
 
 **SGBD:** PostgreSQL (administrado pelo pgAdmin 4)  
 **Banco:** `loja_db`
-
-### Diagrama das tabelas
-
-<!-- 📸 COLE AQUI o diagrama gerado no pgAdmin (ERD Tool): docs/img/diagrama-er.png -->
-![Diagrama ER](docs/img/diagrama-er.png)
 
 ### Principais tabelas
 
@@ -262,9 +262,9 @@ Tela "Produtos"  →  botão Repor estoque  →  CALL sp_repor_estoque(...)  →
 
 ---
 
-## 🎥 Vídeo explicativo
+## 🎥 Vídeo Demostrativo
 
-🔗 **Link do vídeo:** [COLE AQUI O LINK]
+🔗 **Link do vídeo:** []
 
 O vídeo demonstra o funcionamento da aplicação e o uso dos recursos de banco de dados:
 

@@ -217,18 +217,6 @@ Tela "Total da venda"  →  SELECT fn_calcular_total_venda(id)  →  valor exibi
 ESTOQUE
 Tela "Produtos"  →  botão Repor estoque  →  CALL sp_repor_estoque(...)  →  estoque atualizado
 ```
-
-### ✅ Atendimento aos requisitos mínimos
-
-| Recurso | Mínimo | Entregue |
-|---|---|---|
-| View | 1 | 2 (`vw_relatorio_vendas`, `vw_itens_venda`) |
-| Function | 1 | 1 (`fn_calcular_total_venda`) |
-| Procedure | 1 | 2 (`sp_registrar_venda_multipla`, `sp_repor_estoque`) |
-| Telas/funcionalidades utilizando os recursos | 3 ou mais | 4 (Nova venda, Produtos, Relatório, Total da venda) |
-| Repositório GitHub | 1 | ✔ |
-| Vídeo explicativo | 1 | ✔ |
-
 ---
 
 ## ▶️ Como executar
@@ -242,9 +230,7 @@ Tela "Produtos"  →  botão Repor estoque  →  CALL sp_repor_estoque(...)  →
 3. **Execute os scripts**
 
 4. **Instale a dependência**
-```bash
-   pip install -r requirements.txt
-```
+
 5. **Configure a conexão:** 
 
 6. **Execute a aplicação**

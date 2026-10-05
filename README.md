@@ -67,8 +67,6 @@ sistema_vendas/
 │   └── inserts/
 │       └── inserts_teste.sql       # clientes e produtos de teste
 │
-│
-├── requirements.txt
 └── README.md
 ```
 

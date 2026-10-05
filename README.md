@@ -82,7 +82,8 @@ A janela principal possui 5 abas.
 Cadastro de clientes (nome e e-mail), listagem e exclusão.
 
 <!-- 📸 COLE AQUI o print: docs/img/01-clientes.png -->
-![Tela de Clientes](<img width="1920" height="1020" alt="Captura de tela 2026-10-05 181539" src="https://github.com/user-attachments/assets/1771d3fa-bfa2-40f5-a26c-dd39650e384a" />
+![Tela de Clientes](<img width="1920" height="1020" alt="Captura de tela 2026-10-05 181539" src="https://github.com/user-attachments/assets/d619aad0-c419-4215-9324-f119c2e2975f" />
+
 )
 
 ### 2. Produtos

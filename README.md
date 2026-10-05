@@ -3,8 +3,8 @@
 ## 📌 Identificação
 
 - **Aluno:** Ronald Machado
-- **Disciplina:** [Projeto de Banco de Dados]
-- **Professor:** [Anderson Soares]
+- **Disciplina:** Projeto de Banco de Dados
+- **Professor:** Anderson Soares
 
 ## 📖 Sobre o projeto
 

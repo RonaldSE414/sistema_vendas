@@ -1,10 +1,15 @@
 import functools
+import hashlib
+import os
+import pickle
 import tkinter as tk
 from decimal import Decimal
 from tkinter import messagebox, simpledialog, ttk
 
 import psycopg2
 import psycopg2.errors
+import redis
+from dotenv import load_dotenv
 
 try:  # deixa a janela nítida no Windows
     from ctypes import windll
@@ -12,29 +17,59 @@ try:  # deixa a janela nítida no Windows
 except Exception:
     pass
 
-CONFIG = {
-    "host": "localhost",
-    "port": "5432",
-    "dbname": "loja_db",
-    "user": "postgres",
-    "password": "0207",
-    "connect_timeout": 5,
-}
+load_dotenv()
+DATABASE_URL = os.getenv("DATABASE_URL", "")
+REDIS_URL = os.getenv("REDIS_URL", "")
+CACHE_TTL = int(os.getenv("CACHE_TTL", "60"))
+cache = redis.from_url(REDIS_URL, socket_connect_timeout=2, socket_timeout=2) if REDIS_URL else None
+
+def cache_key(sql, params):
+    return "sistema_vendas:" + hashlib.sha256(repr((sql, params)).encode()).hexdigest()
+
+def invalidar_cache():
+    if cache is None:
+        return
+    try:
+        for key in cache.scan_iter("sistema_vendas:*"):
+            cache.delete(key)
+    except redis.RedisError:
+        pass  # indisponibilidade do Redis não impede gravar no banco
 
 
 def conectar():
-    return psycopg2.connect(**CONFIG)
+    if not DATABASE_URL:
+        raise RuntimeError("Configure DATABASE_URL no arquivo .env")
+    return psycopg2.connect(DATABASE_URL, connect_timeout=5, sslmode="require")
 
 
 def executar(sql, params=None, fetch=False):
     """Executa um comando SQL, faz commit e devolve as linhas se fetch=True."""
+    somente_leitura = sql.lstrip().upper().startswith("SELECT ")
+    chave = cache_key(sql, params) if somente_leitura and fetch else None
+    if chave and cache is not None:
+        try:
+            hit = cache.get(chave)
+            if hit is not None:
+                return pickle.loads(hit)
+        except redis.RedisError:
+            pass
     conn = conectar()
     try:
         with conn:
             with conn.cursor() as cur:
                 cur.execute(sql, params)
                 if fetch:
-                    return cur.fetchall()
+                    linhas = cur.fetchall()
+                    if chave and cache is not None:
+                        try:
+                            cache.setex(chave, CACHE_TTL, pickle.dumps(linhas))
+                        except redis.RedisError:
+                            pass
+                    if not somente_leitura:
+                        invalidar_cache()
+                    return linhas
+        if not somente_leitura:
+            invalidar_cache()
     finally:
         conn.close()
 

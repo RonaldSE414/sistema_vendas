@@ -1,4 +1,5 @@
-# 🛒 Sistema de Vendas – View, Function e Procedure com PostgreSQL
+
+# 🛒 Sistema de Vendas – PostgreSQL, Supabase e Redis
 
 > Trabalho Avaliativo – Projeto de Banco de Dados
 
@@ -16,240 +17,795 @@
 
 ## 📖 Sobre o projeto
 
-Aplicação desktop com interface gráfica para gerenciar **clientes, produtos e vendas** de uma loja.
+O Sistema de Vendas é uma aplicação desktop desenvolvida em Python, com interface gráfica em Tkinter, destinada ao gerenciamento de clientes, produtos, estoque e vendas de uma loja.
 
-**Problema que resolve:** em um CRUD simples, regras importantes (baixar o estoque, validar a disponibilidade, calcular o total com desconto, consolidar relatórios) ficam espalhadas pelo código da aplicação, e uma falha no meio de uma venda pode deixar os dados inconsistentes. Neste projeto essas regras foram levadas para dentro do banco de dados, usando **Views**, **Function** e **Procedures**, o que garante consistência (a venda é gravada por inteiro ou não é gravada) e evita duplicar lógica no sistema.
+O projeto foi desenvolvido inicialmente utilizando PostgreSQL instalado localmente e, nesta nova versão, foi ampliado com a integração de duas tecnologias: **Supabase e Redis**.
 
-### Principais funcionalidades
+O Supabase é utilizado para hospedar o banco de dados PostgreSQL na nuvem, permitindo que os registros sejam armazenados em um servidor remoto.
 
-- Cadastro, listagem e exclusão de **clientes**
-- Cadastro, listagem, exclusão, **edição** (nome e preço) e **reposição de estoque** de produtos
-- **Venda com vários produtos** (carrinho), com desconto percentual
-- **Relatório de vendas** consolidado e detalhamento dos itens de cada venda
-- **Cálculo do total** de uma venda com desconto
-- Alerta visual de **estoque baixo** (5 unidades ou menos)
+O Redis é utilizado como mecanismo de cache, armazenando temporariamente os resultados de consultas frequentes para reduzir a necessidade de acessar repetidamente o banco de dados principal.
+
+A interface gráfica original foi preservada, mantendo as cinco abas e suas funcionalidades.
+
+### Problema que o sistema resolve
+
+Em um CRUD simples, regras importantes, como baixar o estoque, validar a disponibilidade de produtos, calcular descontos e consolidar relatórios, podem ficar espalhadas pelo código da aplicação.
+
+Isso aumenta o risco de inconsistências, principalmente quando uma operação envolve várias alterações no banco de dados.
+
+Para solucionar esse problema, o sistema utiliza Views, Function e Procedures do PostgreSQL.
+
+Esses recursos centralizam regras de negócio no banco de dados e permitem que operações, como o registro de uma venda, sejam executadas de forma transacional.
+
+Com a integração ao Supabase, o armazenamento deixou de depender exclusivamente do PostgreSQL local.
+
+A implementação do Redis acrescentou uma camada de cache para consultas, permitindo o reaproveitamento temporário dos resultados.
+
+---
+
+## 🎯 Objetivos
+
+### Objetivo geral
+
+Desenvolver e ampliar um sistema de gerenciamento de vendas, integrando banco de dados relacional na nuvem, mecanismo de cache e interface gráfica.
+
+### Objetivos específicos
+
+- Implementar operações de cadastro, consulta, atualização e exclusão de registros.
+- Utilizar PostgreSQL como sistema gerenciador de banco de dados.
+- Hospedar o banco PostgreSQL no Supabase.
+- Integrar Redis para armazenamento temporário de consultas.
+- Aplicar Views, Function e Procedures para execução de operações no banco.
+- Garantir a consistência das operações de vendas e atualização do estoque.
+- Manter uma interface gráfica desenvolvida em Python.
+- Implementar mecanismos de invalidação de cache após modificações nos dados.
+- Organizar e documentar o funcionamento do sistema.
+
+---
+
+## ⚙️ Funcionalidades
+
+O sistema apresenta as seguintes funcionalidades:
+
+- Cadastro, listagem e exclusão de clientes.
+- Cadastro, listagem e exclusão de produtos.
+- Edição de nome e preço dos produtos.
+- Reposição de estoque.
+- Registro de vendas com vários produtos.
+- Carrinho de compras.
+- Aplicação de descontos percentuais.
+- Baixa automática do estoque após uma venda.
+- Relatório consolidado de vendas.
+- Consulta detalhada dos itens vendidos.
+- Cálculo automático do valor final da venda.
+- Alerta visual para produtos com estoque baixo.
+- Armazenamento temporário de consultas no Redis.
+- Invalidação do cache após operações de alteração no banco.
+- Contadores de Cache HIT e Cache MISS na versão atualizada da aplicação.
 
 ---
 
 ## 🛠️ Tecnologias utilizadas
 
-```
-Python 3
-Tkinter / ttk (interface gráfica)
-psycopg2 (conexão com o PostgreSQL)
-PostgreSQL
-pgAdmin 4
-Git / GitHub
-VS Code
-```
+| Tecnologia | Finalidade |
+|---|---|
+| Python 3 | Desenvolvimento da aplicação |
+| Tkinter / ttk | Interface gráfica desktop |
+| PostgreSQL | Banco de dados relacional |
+| Supabase | Hospedagem do PostgreSQL na nuvem |
+| Redis Cloud | Armazenamento temporário de consultas |
+| psycopg2 | Comunicação entre Python e PostgreSQL |
+| redis-py | Comunicação entre Python e Redis |
+| python-dotenv | Carregamento das configurações do ambiente |
+| SQL / PLpgSQL | Consultas, Views, Function e Procedures |
+| Git / GitHub | Versionamento e armazenamento do projeto |
+| VS Code | Desenvolvimento e execução |
 
 ---
 
 ## 📁 Estrutura do repositório
 
-```
+```text
 sistema_vendas/
 │
 ├── src/
-│   └── sistema_vendas.py              # código-fonte da aplicação
+│   └── sistema_vendas.py
 │
 ├── database/
 │   ├── tabelas/
-│   │   └── tabelas.sql              # criação das tabelas
+│   │   └── tabelas.sql
+│   │
 │   ├── views/
 │   │   ├── vw_relatorio_vendas.sql
 │   │   └── vw_itens_venda.sql
+│   │
 │   ├── functions/
 │   │   └── fn_calcular_total_venda.sql
+│   │
 │   ├── procedures/
 │   │   ├── sp_registrar_venda_multipla.sql
 │   │   └── sp_repor_estoque.sql
+│   │
 │   └── inserts/
-│       └── inserts_teste.sql       # clientes e produtos de teste
+│       └── inserts_teste.sql
 │
+├── requirements.txt
+├── .env.example
+├── .gitignore
 └── README.md
 ```
 
+O arquivo `.env`, utilizado para armazenar as credenciais reais, não deve ser publicado no GitHub.
+
 ---
 
-## 🖥️ Telas da aplicação
+## 🖥️ Interface gráfica
 
-A janela principal possui 5 abas.
+A aplicação mantém as cinco abas presentes na versão original.
 
 ### 1. Clientes
-Cadastro de clientes (nome e e-mail), listagem e exclusão.
 
-<img width="1920" height="1020" alt="Captura de tela 2026-10-05 181539" src="https://github.com/user-attachments/assets/d619aad0-c419-4215-9324-f119c2e2975f" />
+Permite cadastrar clientes informando nome e e-mail, visualizar os registros existentes e excluir clientes selecionados.
 
+Os dados são armazenados no PostgreSQL hospedado no Supabase.
+
+A consulta de clientes pode utilizar o cache Redis.
+
+<img width="1920" height="1020" alt="Tela de clientes" src="https://github.com/user-attachments/assets/d619aad0-c419-4215-9324-f119c2e2975f" />
 
 ### 2. Produtos
-Cadastro, listagem, exclusão, **edição de nome e preço** (botão ou dois cliques) e **reposição de estoque**. Produtos com estoque baixo aparecem em vermelho.
 
-- Botão **Repor estoque** → chama a Procedure `sp_repor_estoque`.
+Permite cadastrar, listar, editar e excluir produtos.
 
-<img width="1920" height="1020" alt="Captura de tela 2026-10-05 181559" src="https://github.com/user-attachments/assets/7456b75c-2c1c-4051-becb-afda4259132b" />
+Cada produto possui nome, preço e quantidade disponível em estoque.
 
+O sistema destaca visualmente os produtos com estoque igual ou inferior a cinco unidades.
+
+A reposição de estoque utiliza a Procedure `sp_repor_estoque`.
+
+Após alterações nos produtos, o cache do sistema é invalidado para que consultas posteriores obtenham informações atualizadas.
+
+<img width="1920" height="1020" alt="Tela de produtos" src="https://github.com/user-attachments/assets/7456b75c-2c1c-4051-becb-afda4259132b" />
 
 ### 3. Nova venda (Procedure)
-O usuário escolhe o cliente, adiciona **vários produtos ao carrinho**, informa o desconto e finaliza a venda.
 
-- Botão **Finalizar venda** → chama a Procedure `sp_registrar_venda_multipla`.
-- Ao concluir, o total exibido é calculado pela Function `fn_calcular_total_venda`.
+O usuário seleciona um cliente, escolhe os produtos, informa as quantidades e adiciona os itens ao carrinho.
 
-<img width="1920" height="1020" alt="Captura de tela 2026-10-05 181715" src="https://github.com/user-attachments/assets/5bf4941a-1f44-47c2-b1b2-34d773579441" />
+Também é possível informar um desconto percentual.
 
+Ao finalizar a venda, o sistema chama a Procedure `sp_registrar_venda_multipla`.
+
+A Procedure registra a venda, grava os itens e atualiza o estoque.
+
+Após o registro, a Function `fn_calcular_total_venda` calcula o valor final.
+
+<img width="1920" height="1020" alt="Tela de nova venda" src="https://github.com/user-attachments/assets/5bf4941a-1f44-47c2-b1b2-34d773579441" />
 
 ### 4. Relatório (View)
-Lista todas as vendas (cliente, data, quantidade de itens, subtotal e desconto). Com **dois cliques em uma venda**, são exibidos os produtos que a compõem.
 
-- Listagem → consulta a View `vw_relatorio_vendas`.
-- Detalhe da venda → consulta a View `vw_itens_venda`.
+Apresenta um relatório consolidado das vendas registradas.
 
-<img width="1920" height="1020" alt="Captura de tela 2026-10-05 181741" src="https://github.com/user-attachments/assets/5f11de6e-1783-4bda-99af-55558d0913b5" />
+São exibidas informações como:
 
-<img width="1920" height="1020" alt="Captura de tela 2026-10-05 183459" src="https://github.com/user-attachments/assets/5c977f0b-c670-4e06-be11-3f02ba590ba7" />
+- Número da venda.
+- Cliente.
+- Data.
+- Quantidade de itens.
+- Subtotal.
+- Desconto percentual.
 
+A listagem utiliza a View `vw_relatorio_vendas`.
+
+Ao clicar duas vezes em uma venda, o sistema consulta a View `vw_itens_venda` para apresentar os produtos vendidos.
+
+<img width="1920" height="1020" alt="Relatório de vendas" src="https://github.com/user-attachments/assets/5f11de6e-1783-4bda-99af-55558d0913b5" />
+
+<img width="1920" height="1020" alt="Detalhamento dos itens da venda" src="https://github.com/user-attachments/assets/5c977f0b-c670-4e06-be11-3f02ba590ba7" />
 
 ### 5. Total da venda (Function)
-O usuário escolhe uma venda e o sistema mostra o valor final, já com o desconto aplicado.
 
-- Botão **Calcular total** → chama a Function `fn_calcular_total_venda`.
+Permite selecionar uma venda já registrada e calcular seu valor final.
 
-<img width="1920" height="1020" alt="Captura de tela 2026-10-05 181803" src="https://github.com/user-attachments/assets/34ff77e0-aa77-441e-88a5-c2cc3074ebca" />
+O cálculo utiliza a Function `fn_calcular_total_venda`, que considera os itens vendidos e o desconto aplicado.
+
+<img width="1920" height="1020" alt="Tela de cálculo do total da venda" src="https://github.com/user-attachments/assets/34ff77e0-aa77-441e-88a5-c2cc3074ebca" />
+
+**Observação:** as capturas acima pertencem à interface original, preservada nesta atualização. Os indicadores de cache da nova versão aparecem no rodapé.
 
 ---
 
-## 🗄️ Banco de dados
+## 🗄️ Banco de dados PostgreSQL no Supabase
 
-**SGBD:** PostgreSQL (administrado pelo pgAdmin 4)  
-**Banco:** `loja_db`
+### Implementação anterior
+
+Na versão inicial, o sistema utilizava PostgreSQL instalado localmente, com o banco `loja_db`, administrado por ferramentas como o pgAdmin 4.
+
+A conexão Python era realizada por meio do endereço `localhost`.
+
+### Implementação atual
+
+Na versão atualizada, o banco PostgreSQL está hospedado no Supabase.
+
+O Supabase permite armazenar os registros remotamente e executar as mesmas estruturas SQL utilizadas anteriormente.
+
+A conexão é realizada utilizando `psycopg2` e uma string PostgreSQL configurada por meio de variável de ambiente.
 
 ### Principais tabelas
 
 | Tabela | Descrição | Colunas principais |
 |---|---|---|
-| `clientes` | Clientes da loja | `id`, `nome`, `email` (único), `criado_em` |
-| `produtos` | Produtos à venda | `id`, `nome`, `preco`, `estoque` |
-| `vendas` | Cabeçalho de cada venda | `id`, `cliente_id` (FK), `data_venda`, `desconto_pct` |
-| `itens_venda` | Itens de cada venda | `id`, `venda_id` (FK), `produto_id` (FK), `quantidade`, `preco_unitario` |
+| `clientes` | Clientes cadastrados | `id`, `nome`, `email`, `criado_em` |
+| `produtos` | Produtos disponíveis | `id`, `nome`, `preco`, `estoque` |
+| `vendas` | Registro geral das vendas | `id`, `cliente_id`, `data_venda`, `desconto_pct` |
+| `itens_venda` | Produtos de cada venda | `id`, `venda_id`, `produto_id`, `quantidade`, `preco_unitario` |
 
-**Relacionamentos:** um cliente tem várias vendas; uma venda tem vários itens; um produto aparece em vários itens. O `preco_unitario` é gravado no item, então alterar o preço de um produto **não muda vendas antigas**.
+### Relacionamentos
 
----
+- Um cliente pode possuir várias vendas.
+- Uma venda pode conter vários itens.
+- Um produto pode aparecer em diferentes vendas.
+- Cada item registra o preço unitário no momento da venda.
 
-### 👁️ View 1 – `vw_relatorio_vendas`
-
-| | |
-|---|---|
-| **Arquivo** | `database/views/vw_relatorio_vendas.sql` |
-| **Por que foi criada** | Para entregar o relatório de vendas já consolidado, sem montar JOINs e agrupamentos dentro do código Python |
-| **Tabelas envolvidas** | `vendas`, `clientes`, `itens_venda` |
-| **Informação retornada** | Uma linha por venda: número, cliente, data, quantidade total de itens, subtotal e desconto |
-| **Onde é utilizada** | Aba **Relatório (View)** |
-| **Problema que resolve** | Centraliza a regra de consolidação em um único lugar; a aplicação só faz `SELECT * FROM vw_relatorio_vendas` |
-
-### 👁️ View 2 – `vw_itens_venda`
-
-| | |
-|---|---|
-| **Arquivo** | `database/views/vw_itens_venda.sql` |
-| **Por que foi criada** | Para detalhar o que foi vendido em cada venda (a View 1 mostra só o total) |
-| **Tabelas envolvidas** | `itens_venda`, `produtos` |
-| **Informação retornada** | Para cada item: venda, nome do produto, quantidade, preço unitário e subtotal do item |
-| **Onde é utilizada** | Aba **Relatório (View)**, ao dar dois cliques em uma venda |
-| **Problema que resolve** | Permite conferir os produtos de uma venda com vários itens sem repetir JOINs na aplicação |
+O armazenamento do preço unitário permite preservar o histórico financeiro, mesmo que o preço de um produto seja alterado posteriormente.
 
 ---
 
-### ⚙️ Function – `fn_calcular_total_venda(p_venda_id INT)`
+## 👁️ Views
 
-| | |
-|---|---|
-| **Arquivo** | `database/functions/fn_calcular_total_venda.sql` |
-| **O que faz** | Soma `quantidade × preço` dos itens da venda e aplica o desconto percentual da venda |
-| **Parâmetros** | `p_venda_id` (INT): número da venda |
-| **Retorno** | `NUMERIC`: valor final da venda, arredondado em 2 casas. Gera erro se a venda não existir |
-| **Onde é utilizada** | Aba **Total da venda (Function)** e mensagem de confirmação ao finalizar uma venda na aba **Nova venda** |
-| **Problema que resolve** | Garante que o cálculo do valor final seja sempre o mesmo, vindo de uma única regra no banco |
+### View 1 — vw_relatorio_vendas
 
----
+**Arquivo:** `database/views/vw_relatorio_vendas.sql`
 
-### 🔁 Procedure 1 – `sp_registrar_venda_multipla(...)`
+Consolida as informações das vendas realizadas.
 
-| | |
-|---|---|
-| **Arquivo** | `database/procedures/sp_registrar_venda_multipla.sql` |
-| **O que faz** | Registra uma venda completa com um ou vários produtos |
-| **Parâmetros** | `p_cliente_id` (INT), `p_produtos` (INT[]), `p_quantidades` (INT[]), `p_desconto_pct` (NUMERIC) e `p_venda_id` (INOUT, devolve o número da venda criada) |
-| **Operações realizadas** | 1) valida o cliente; 2) valida a lista de produtos; 3) cria a venda; 4) para cada item: trava o produto, confere o estoque, grava o item com o preço atual e baixa o estoque |
-| **Tela que chama** | Aba **Nova venda (Procedure)**, botão **Finalizar venda** |
-| **Problema que resolve** | Torna a venda **atômica**: se qualquer item falhar (ex.: estoque insuficiente), nada é gravado, evitando venda pela metade e estoque inconsistente |
+Utiliza as tabelas:
 
-### 🔁 Procedure 2 – `sp_repor_estoque(p_produto_id, p_quantidade)`
+- `vendas`
+- `clientes`
+- `itens_venda`
 
-| | |
-|---|---|
-| **Arquivo** | `database/procedures/sp_repor_estoque.sql` |
-| **O que faz** | Soma uma quantidade ao estoque de um produto |
-| **Parâmetros** | `p_produto_id` (INT), `p_quantidade` (INT, deve ser maior que zero) |
-| **Operações realizadas** | Valida a quantidade, atualiza o estoque e gera erro se o produto não existir |
-| **Tela que chama** | Aba **Produtos**, botão **Repor estoque** |
-| **Problema que resolve** | Padroniza a entrada de mercadoria com validação feita no banco |
+Retorna dados como número da venda, cliente, data, quantidade de itens, subtotal e desconto.
 
----
+É utilizada na aba Relatório.
 
-### 🔗 Funcionamento integrado
+A aplicação executa:
 
+```sql
+SELECT *
+FROM vw_relatorio_vendas
+ORDER BY venda_id DESC;
 ```
-VENDA
-Tela "Nova venda"  →  botão Finalizar venda  →  psycopg2: CALL sp_registrar_venda_multipla(...)
-   →  Procedure grava venda + itens e baixa o estoque
-   →  Function fn_calcular_total_venda calcula o total
-   →  Total exibido na aplicação
 
-RELATÓRIO
-Tela "Relatório"  →  SELECT * FROM vw_relatorio_vendas  →  tabela exibida na tela
-(dois cliques)    →  SELECT ... FROM vw_itens_venda     →  itens da venda exibidos
+### View 2 — vw_itens_venda
 
-TOTAL
-Tela "Total da venda"  →  SELECT fn_calcular_total_venda(id)  →  valor exibido na tela
+**Arquivo:** `database/views/vw_itens_venda.sql`
 
-ESTOQUE
-Tela "Produtos"  →  botão Repor estoque  →  CALL sp_repor_estoque(...)  →  estoque atualizado
-```
+Apresenta informações detalhadas sobre os produtos de cada venda.
+
+Utiliza as tabelas:
+
+- `itens_venda`
+- `produtos`
+
+Retorna o nome do produto, quantidade, preço unitário e subtotal.
+
+É utilizada quando o usuário abre o detalhamento de uma venda.
+
 ---
 
-## ▶️ Como executar
+## ⚙️ Function
 
-**Pré-requisitos:** Python 3.10+ (com Tkinter), PostgreSQL e pgAdmin 4.
+### fn_calcular_total_venda(p_venda_id INT)
 
-1. **Clone o repositório**
+**Arquivo:** `database/functions/fn_calcular_total_venda.sql`
 
-2. **Crie o banco no pgAdmin 4:** 
+A Function calcula o valor total da venda considerando o subtotal dos itens e o desconto percentual.
 
-3. **Execute os scripts**
+O cálculo segue a expressão:
 
-4. **Instale a dependência**
+```text
+Total = Subtotal × (1 - Desconto / 100)
+```
 
-5. **Configure a conexão:** 
+Exemplo:
 
-6. **Execute a aplicação**
+Uma venda com subtotal de R$ 200,00 e desconto de 10% terá valor final de R$ 180,00.
+
+A Function recebe o identificador da venda e retorna um valor numérico com duas casas decimais.
+
+Também verifica se a venda informada existe.
+
+Exemplo de utilização:
+
+```sql
+SELECT fn_calcular_total_venda(1);
+```
+
+---
+
+## 🔁 Procedures
+
+### Procedure 1 — sp_registrar_venda_multipla
+
+**Arquivo:** `database/procedures/sp_registrar_venda_multipla.sql`
+
+Responsável pelo registro de vendas com um ou vários produtos.
+
+Recebe:
+
+- Identificador do cliente.
+- Lista de produtos.
+- Lista de quantidades.
+- Percentual de desconto.
+- Parâmetro de saída com o identificador da venda.
+
+A Procedure executa as seguintes operações:
+
+1. Verifica se o cliente existe.
+2. Valida a lista de produtos.
+3. Cria o registro da venda.
+4. Verifica os produtos e suas quantidades.
+5. Confere a disponibilidade do estoque.
+6. Registra os itens vendidos.
+7. Atualiza o estoque.
+8. Retorna o identificador da venda.
+
+As operações fazem parte de uma transação.
+
+Se algum produto não possuir estoque suficiente, a transação é revertida, evitando o registro parcial de uma venda.
+
+### Procedure 2 — sp_repor_estoque
+
+**Arquivo:** `database/procedures/sp_repor_estoque.sql`
+
+Responsável por aumentar a quantidade disponível de determinado produto.
+
+Recebe:
+
+- Identificador do produto.
+- Quantidade a adicionar.
+
+A Procedure verifica se a quantidade é válida e se o produto existe.
+
+Exemplo:
+
+```sql
+CALL sp_repor_estoque(1, 10);
+```
+
+Esse comando adiciona dez unidades ao estoque do produto de ID 1.
+
+---
+
+## ☁️ Integração com Supabase
+
+O Supabase foi utilizado como serviço de hospedagem do banco PostgreSQL.
+
+A estrutura original do projeto foi reproduzida no SQL Editor do Supabase, incluindo:
+
+- Quatro tabelas.
+- Duas Views.
+- Uma Function.
+- Duas Procedures.
+
+A aplicação Python realiza a conexão com o banco remoto por meio da biblioteca `psycopg2`.
+
+A string de conexão fica armazenada na variável `DATABASE_URL`, configurada no arquivo `.env`.
+
+### Funcionamento
+
+```text
+Interface Tkinter
+       |
+       v
+Aplicação Python
+       |
+       v
+psycopg2
+       |
+       v
+Supabase (PostgreSQL)
+       |
+       v
+Tabelas, Views, Function e Procedures
+```
+
+Essa integração permite executar operações SQL no banco hospedado na nuvem, sem depender do PostgreSQL local.
+
+---
+
+## ⚡ Integração com Redis Cloud
+
+### O que é Redis?
+
+Redis é um banco de dados que pode manter informações em memória e é frequentemente utilizado como mecanismo de cache.
+
+No projeto, ele não substitui o PostgreSQL.
+
+O PostgreSQL continua responsável pelo armazenamento principal e persistente das informações.
+
+O Redis funciona como uma camada intermediária para reaproveitar temporariamente resultados de consultas.
+
+### Por que utilizar Redis?
+
+Quando uma aplicação acessa um banco remoto, cada consulta envolve comunicação pela rede.
+
+Consultas frequentes e repetidas podem aumentar o tempo de resposta.
+
+O Redis permite armazenar temporariamente os resultados e recuperá-los sem realizar novamente a mesma consulta no PostgreSQL.
+
+### Funcionamento do cache
+
+O sistema utiliza uma estratégia de cache para consultas de leitura.
+
+O processo ocorre da seguinte forma:
+
+1. A aplicação recebe uma solicitação de consulta.
+2. Verifica se o resultado está armazenado no Redis.
+3. Se estiver, recupera os dados do cache.
+4. Se não estiver, consulta o PostgreSQL no Supabase.
+5. Armazena temporariamente o resultado no Redis.
+6. Retorna os dados para a interface.
+
+### Cache HIT
+
+Acontece quando os dados solicitados já estão armazenados no Redis.
+
+Nesse caso, o resultado é recuperado do cache.
+
+### Cache MISS
+
+Acontece quando o resultado não está disponível no Redis.
+
+Nesse caso, a aplicação consulta o PostgreSQL e pode armazenar o resultado para consultas posteriores.
+
+### Tempo de expiração
+
+A variável `CACHE_TTL` determina por quanto tempo os resultados permanecem armazenados.
+
+Exemplo:
+
+```env
+CACHE_TTL=300
+```
+
+Nesse caso, o cache possui tempo de expiração de 300 segundos, equivalente a cinco minutos.
+
+### Invalidação do cache
+
+O sistema invalida as chaves de cache relacionadas à aplicação após operações de alteração no PostgreSQL.
+
+Isso inclui:
+
+- Cadastro de clientes.
+- Exclusão de clientes.
+- Cadastro de produtos.
+- Edição de produtos.
+- Exclusão de produtos.
+- Reposição de estoque.
+- Registro de vendas.
+
+A invalidação impede que a própria aplicação continue reutilizando resultados anteriores após essas alterações.
+
+### Tratamento de indisponibilidade
+
+O Redis é utilizado como mecanismo auxiliar.
+
+Se o Redis estiver indisponível, a aplicação poderá continuar consultando o PostgreSQL diretamente.
+
+As operações de venda e atualização de estoque continuam dependendo das regras transacionais do PostgreSQL.
+
+### Contadores de cache
+
+A versão atualizada da aplicação apresenta indicadores no rodapé:
+
+- **Cache HIT:** quantidade de consultas atendidas pelo Redis.
+- **Cache MISS:** quantidade de consultas que precisaram ser buscadas no PostgreSQL.
+
+Esses contadores são reiniciados quando a aplicação é aberta novamente.
+
+---
+
+## 🔗 Arquitetura integrada
+
+```text
+                 USUÁRIO
+                    |
+                    v
+             PYTHON + TKINTER
+                    |
+                    v
+              APLICAÇÃO
+                    |
+          CONSULTA DE LEITURA
+                    |
+                    v
+                  REDIS
+                 /     \
+                /       \
+           CACHE HIT   CACHE MISS
+              |            |
+              v            v
+        Retorna dados   SUPABASE
+                            |
+                            v
+                       POSTGRESQL
+                            |
+                            v
+                      Retorna dados
+                            |
+                            v
+                      Atualiza cache
+```
+
+Nas operações de escrita, a aplicação utiliza o PostgreSQL e invalida o cache após a confirmação da alteração.
+
+---
+
+## 🔐 Configuração das conexões
+
+O sistema utiliza variáveis de ambiente para evitar que credenciais sejam escritas diretamente no código-fonte.
+
+Crie um arquivo `.env` na pasta principal do projeto, utilizando `.env.example` como referência.
+
+Exemplo:
+
+```env
+DATABASE_URL=postgresql://USUARIO:SENHA@SERVIDOR:5432/postgres
+REDIS_URL=redis://USUARIO:SENHA@SERVIDOR:PORTA
+CACHE_TTL=300
+```
+
+Substitua os valores de exemplo pelas configurações reais dos serviços.
+
+### Segurança
+
+- Nunca publique o arquivo `.env`.
+- Não compartilhe senhas do PostgreSQL.
+- Não compartilhe senhas do Redis.
+- Utilize o arquivo `.gitignore`.
+- Não coloque credenciais diretamente no código Python.
+
+**Observação sobre Redis Cloud Free:** o plano gratuito utilizado nesta implementação não oferece TLS para a conexão Redis. Por isso, esta configuração deve ser tratada como ambiente de demonstração acadêmica, sem dados sensíveis. Aplicações de produção devem utilizar transporte criptografado, autenticação e controles de acesso apropriados.
+
+---
+
+## ▶️ Como executar o projeto
+
+### Pré-requisitos
+
+- Python 3.10 ou superior.
+- Tkinter disponível na instalação Python.
+- Projeto criado no Supabase.
+- Banco Redis Cloud configurado.
+- VS Code ou outro editor.
+- Conexão com a internet.
+
+### 1. Clonar o repositório
+
 ```bash
-   python src/sistema_vendas.py
+git clone https://github.com/RonaldSE414/sistema_vendas.git
 ```
+
+Entre na pasta:
+
+```bash
+cd sistema_vendas
+```
+
+### 2. Instalar as dependências
+
+```bash
+python -m pip install -r requirements.txt
+```
+
+As principais dependências são:
+
+```text
+psycopg2-binary
+redis
+python-dotenv
+```
+
+### 3. Criar as estruturas no Supabase
+
+Acesse o SQL Editor do projeto Supabase e execute os arquivos nesta ordem:
+
+1. `database/tabelas/tabelas.sql`
+2. `database/views/vw_relatorio_vendas.sql`
+3. `database/views/vw_itens_venda.sql`
+4. `database/functions/fn_calcular_total_venda.sql`
+5. `database/procedures/sp_repor_estoque.sql`
+6. `database/procedures/sp_registrar_venda_multipla.sql`
+
+Opcionalmente, execute `database/inserts/inserts_teste.sql` para inserir registros fictícios.
+
+### 4. Configurar o ambiente
+
+Crie o arquivo `.env` na pasta principal do projeto.
+
+Preencha:
+
+```env
+DATABASE_URL=SUA_CONEXAO_POSTGRESQL
+REDIS_URL=SUA_CONEXAO_REDIS
+CACHE_TTL=300
+```
+
+Não publique esse arquivo no GitHub.
+
+### 5. Executar a aplicação
+
+```bash
+python src/sistema_vendas.py
+```
+
+A janela principal será aberta com as cinco abas do sistema.
 
 ---
 
-## 🎥 Vídeo Demostrativo
+## 🧪 Testes de funcionamento
 
-🔗 **Link do vídeo: https://drive.google.com/file/d/1cw7ScubP6mJPa8e_FWyvAA3suQHkgdWi/view?usp=sharing  ** 
+### Teste 1 — Conexão com Supabase
 
+1. Abra a aplicação.
+2. Cadastre um cliente fictício.
+3. Acesse o Table Editor do Supabase.
+4. Abra a tabela `clientes`.
+5. Confirme que o registro foi armazenado.
 
+Esse teste verifica a comunicação entre a interface Python e o banco PostgreSQL remoto.
 
-O vídeo demonstra o funcionamento da aplicação e o uso dos recursos de banco de dados:
+### Teste 2 — Conexão com Redis
 
+Execute no terminal, com o arquivo `.env` configurado:
+
+```bash
+python -c "import os,redis; from dotenv import load_dotenv; load_dotenv(); r=redis.from_url(os.environ['REDIS_URL']); print('Redis conectado:',r.ping())"
+```
+
+Resultado esperado:
+
+```text
+Redis conectado: True
+```
+
+### Teste 3 — Armazenamento no cache
+
+Com o terminal aberto na pasta principal do projeto, execute:
+
+```bash
+python -c "import sys; sys.path.insert(0,'src'); import sistema_vendas as s; sql='SELECT id, nome, email FROM clientes ORDER BY id'; s.executar(sql,fetch=True); s.executar(sql,fetch=True); print('HIT:',s.CACHE_STATS['hit'],'MISS:',s.CACHE_STATS['miss'])"
+```
+
+Uma consulta repetida poderá gerar Cache HIT, confirmando a recuperação de informações do Redis.
+
+### Teste 4 — Invalidação do cache
+
+1. Abra o sistema de vendas.
+2. Consulte os clientes ou produtos.
+3. Cadastre um novo registro.
+4. Atualize a listagem.
+5. Confirme que o novo registro aparece.
+6. Verifique o mesmo registro no Supabase.
+
+Esse procedimento ajuda a validar a atualização das informações após operações de escrita.
+
+### Teste 5 — Registro de venda
+
+1. Cadastre um cliente.
+2. Cadastre produtos com estoque disponível.
+3. Abra a aba Nova venda.
+4. Adicione produtos ao carrinho.
+5. Informe um desconto, se desejar.
+6. Finalize a venda.
+7. Verifique o estoque atualizado.
+8. Abra a aba Relatório.
+9. Confira a venda registrada no Supabase.
+
+Esse teste verifica a integração da interface com a Procedure de vendas e o cálculo do valor final.
+
+---
+
+## 🔄 Evolução do projeto
+
+### Versão 1 — PostgreSQL local
+
+A primeira versão utilizava:
+
+- Python.
+- Tkinter.
+- PostgreSQL local.
+- psycopg2.
+- Views.
+- Function.
+- Procedures.
+- pgAdmin 4.
+
+O banco era acessado por meio de conexão local.
+
+### Versão 2 — Supabase e Redis
+
+A segunda versão acrescentou:
+
+- Hospedagem do PostgreSQL no Supabase.
+- Conexão remota utilizando variáveis de ambiente.
+- Redis Cloud para cache.
+- Expiração automática das entradas de cache.
+- Invalidação após alterações no banco.
+- Contadores de Cache HIT e Cache MISS.
+- Tratamento de indisponibilidade do Redis.
+- Atualização das dependências e da documentação.
+
+A estrutura das tabelas e a interface gráfica original foram mantidas.
+
+---
+
+## 📊 Resultados da implementação
+
+A integração do Supabase permitiu substituir a conexão ao banco local por uma conexão ao PostgreSQL hospedado na nuvem.
+
+A integração com Redis acrescentou uma camada de cache para consultas, com armazenamento temporário dos resultados e mecanismo de invalidação.
+
+A aplicação continua utilizando as regras de negócio implementadas no PostgreSQL por meio de Views, Function e Procedures.
+
+Os testes de conexão realizados durante a configuração confirmaram a comunicação do Python com o Supabase e o Redis Cloud, além da criação de entradas de cache.
+
+O desempenho depende de fatores como latência da rede, localização dos servidores, tempo de expiração do cache e frequência das consultas.
+
+O uso do Redis não elimina a necessidade de consultar o PostgreSQL em operações de escrita ou em situações de Cache MISS.
+
+---
+
+## 🎥 Vídeo demonstrativo
+
+### Demonstração da versão original
+
+[Assistir ao vídeo no Google Drive](https://drive.google.com/file/d/1cw7ScubP6mJPa8e_FWyvAA3suQHkgdWi/view?usp=sharing)
+
+O vídeo apresenta o funcionamento da versão anterior, utilizando PostgreSQL local.
+
+Demonstra:
+
+- Cadastro de clientes e produtos.
+- Registro de vendas.
+- Reposição de estoque.
+- Utilização das Views.
+- Execução da Function.
+- Execução das Procedures.
+
+**Observação:** este vídeo corresponde à implementação original e não demonstra as integrações com Supabase e Redis.
+
+---
 
 ## 👤 Autor
 
-**Ronald Machado**  
-   [Projeto de Banco de Dados] – [Anderson Soares] – [ 4º Semestre]
+**Ronald Machado**
+
+Disciplina: Projeto de Banco de Dados
+
+Professor: Anderson Soares
+
+Curso: 4º semestre
+
+---
+
+## 📚 Documentação das tecnologias
+
+- [Python](https://www.python.org/)
+- [PostgreSQL](https://www.postgresql.org/)
+- [Supabase](https://supabase.com/docs)
+- [Redis](https://redis.io/docs/latest/)
+- [psycopg2](https://www.psycopg.org/docs/)
+- [Tkinter](https://docs.python.org/3/library/tkinter.html)
+- [GitHub](https://github.com/)
+
+---
+
+## ✅ Considerações finais
+
+O desenvolvimento do Sistema de Vendas permitiu aplicar conhecimentos de modelagem de dados, SQL, relacionamentos, transações, Views, Function e Procedures.
+
+A ampliação do projeto com Supabase e Redis possibilitou trabalhar com banco de dados hospedado na nuvem e armazenamento temporário de consultas.
+
+A solução demonstra a integração de diferentes tecnologias em uma aplicação desktop, preservando as funcionalidades existentes e acrescentando novos recursos de gerenciamento de dados e cache.

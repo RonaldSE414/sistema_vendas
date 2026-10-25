@@ -210,7 +210,13 @@ O cálculo utiliza a Function `fn_calcular_total_venda`, que considera os itens 
 
 <img width="1920" height="1020" alt="Tela de cálculo do total da venda" src="https://github.com/user-attachments/assets/34ff77e0-aa77-441e-88a5-c2cc3074ebca" />
 
-**Observação:** as capturas acima pertencem à interface original, preservada nesta atualização. Os indicadores de cache da nova versão aparecem no rodapé.
+### 6. Tabelas sincronizadas dentro do supabase
+
+<img width="1825" height="496" alt="Captura de tela 2026-10-25 202929" src="https://github.com/user-attachments/assets/4af263bb-8894-4ba1-bb29-dbbd8b9181e0" />
+
+### 7. Redis integrado no sistema
+
+<img width="1638" height="632" alt="Captura de tela 2026-10-25 205310" src="https://github.com/user-attachments/assets/aa20cb5b-7a70-4ab9-8414-c4750f815a95" />
 
 ---
 
@@ -759,22 +765,15 @@ O uso do Redis não elimina a necessidade de consultar o PostgreSQL em operaçõ
 
 ## 🎥 Vídeo demonstrativo
 
+### Demonstração da versão atualizada
+
+------
+
 ### Demonstração da versão original
 
 [Assistir ao vídeo no Google Drive](https://drive.google.com/file/d/1cw7ScubP6mJPa8e_FWyvAA3suQHkgdWi/view?usp=sharing)
 
-O vídeo apresenta o funcionamento da versão anterior, utilizando PostgreSQL local.
 
-Demonstra:
-
-- Cadastro de clientes e produtos.
-- Registro de vendas.
-- Reposição de estoque.
-- Utilização das Views.
-- Execução da Function.
-- Execução das Procedures.
-
-**Observação:** este vídeo corresponde à implementação original e não demonstra as integrações com Supabase e Redis.
 
 ---
 

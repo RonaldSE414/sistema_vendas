@@ -1,8 +1,9 @@
 import functools
 import hashlib
+import json
 import os
-import pickle
 import tkinter as tk
+from datetime import date, datetime
 from decimal import Decimal
 from tkinter import messagebox, simpledialog, ttk
 
@@ -11,7 +12,7 @@ import psycopg2.errors
 import redis
 from dotenv import load_dotenv
 
-try:  # deixa a janela nítida no Windows
+try:  
     from ctypes import windll
     windll.shcore.SetProcessDpiAwareness(1)
 except Exception:
@@ -22,6 +23,26 @@ DATABASE_URL = os.getenv("DATABASE_URL", "")
 REDIS_URL = os.getenv("REDIS_URL", "")
 CACHE_TTL = int(os.getenv("CACHE_TTL", "60"))
 cache = redis.from_url(REDIS_URL, socket_connect_timeout=2, socket_timeout=2) if REDIS_URL else None
+
+
+def codificar_valor(valor):
+    if isinstance(valor, Decimal):
+        return {"__tipo__": "decimal", "valor": str(valor)}
+    if isinstance(valor, (date, datetime)):
+        return {"__tipo__": "datetime" if isinstance(valor, datetime) else "date",
+                "valor": valor.isoformat()}
+    raise TypeError(f"Tipo não serializável: {type(valor).__name__}")
+
+
+def decodificar_valor(objeto):
+    tipo = objeto.get("__tipo__")
+    if tipo == "decimal":
+        return Decimal(objeto["valor"])
+    if tipo == "datetime":
+        return datetime.fromisoformat(objeto["valor"])
+    if tipo == "date":
+        return date.fromisoformat(objeto["valor"])
+    return objeto
 
 def cache_key(sql, params):
     return "sistema_vendas:" + hashlib.sha256(repr((sql, params)).encode()).hexdigest()
@@ -50,8 +71,9 @@ def executar(sql, params=None, fetch=False):
         try:
             hit = cache.get(chave)
             if hit is not None:
-                return pickle.loads(hit)
-        except redis.RedisError:
+                return json.loads(hit, object_hook=decodificar_valor)
+        except (redis.RedisError, ValueError, UnicodeError, TypeError):
+            # Ignora entradas antigas ou inválidas, inclusive cache legado.
             pass
     conn = conectar()
     try:
@@ -62,14 +84,16 @@ def executar(sql, params=None, fetch=False):
                     linhas = cur.fetchall()
                     if chave and cache is not None:
                         try:
-                            cache.setex(chave, CACHE_TTL, pickle.dumps(linhas))
+                            cache.setex(chave, CACHE_TTL,
+                                        json.dumps(linhas, default=codificar_valor))
                         except redis.RedisError:
                             pass
-                    if not somente_leitura:
-                        invalidar_cache()
-                    return linhas
+                    resultado = linhas
+                else:
+                    resultado = None
         if not somente_leitura:
             invalidar_cache()
+        return resultado
     finally:
         conn.close()
 

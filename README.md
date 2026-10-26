@@ -214,9 +214,17 @@ O cálculo utiliza a Function `fn_calcular_total_venda`, que considera os itens 
 
 <img width="1825" height="496" alt="Captura de tela 2026-10-25 202929" src="https://github.com/user-attachments/assets/4af263bb-8894-4ba1-bb29-dbbd8b9181e0" />
 
+
 ### 7. Redis integrado no sistema
 
 <img width="1638" height="632" alt="Captura de tela 2026-10-25 205310" src="https://github.com/user-attachments/assets/aa20cb5b-7a70-4ab9-8414-c4750f815a95" />
+
+
+### 8. Testes de conexão com Supabase e Redis Cloud no terminal do VS Code, com confirmação do funcionamento do cache Redis
+
+Os testes confirmaram a conexão com o PostgreSQL hospedado no Supabase e com o Redis Cloud. Também foi verificado o armazenamento de consultas no cache, com três chaves registradas no Redis durante a execução.
+
+<img width="1555" height="340" alt="Captura de tela 2026-10-25 205953" src="https://github.com/user-attachments/assets/dca7eae1-7978-41a8-b23c-8e01b43583f0" />
 
 ---
 

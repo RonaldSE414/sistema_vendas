@@ -81,7 +81,6 @@ O sistema apresenta as seguintes funcionalidades:
 - Alerta visual para produtos com estoque baixo.
 - Armazenamento temporário de consultas no Redis.
 - Invalidação do cache após operações de alteração no banco.
-- Contadores de Cache HIT e Cache MISS na versão atualizada da aplicação.
 
 ---
 
@@ -509,15 +508,6 @@ Se o Redis estiver indisponível, a aplicação poderá continuar consultando o 
 
 As operações de venda e atualização de estoque continuam dependendo das regras transacionais do PostgreSQL.
 
-### Contadores de cache
-
-A versão atualizada da aplicação apresenta indicadores no rodapé:
-
-- **Cache HIT:** quantidade de consultas atendidas pelo Redis.
-- **Cache MISS:** quantidade de consultas que precisaram ser buscadas no PostgreSQL.
-
-Esses contadores são reiniciados quando a aplicação é aberta novamente.
-
 ---
 
 ## 🔗 Arquitetura integrada
@@ -646,7 +636,6 @@ REDIS_URL=SUA_CONEXAO_REDIS
 CACHE_TTL=300
 ```
 
-Não publique esse arquivo no GitHub.
 
 ### 5. Executar a aplicação
 
@@ -689,7 +678,7 @@ Redis conectado: True
 Com o terminal aberto na pasta principal do projeto, execute:
 
 ```bash
-python -c "import sys; sys.path.insert(0,'src'); import sistema_vendas as s; sql='SELECT id, nome, email FROM clientes ORDER BY id'; s.executar(sql,fetch=True); s.executar(sql,fetch=True); print('HIT:',s.CACHE_STATS['hit'],'MISS:',s.CACHE_STATS['miss'])"
+python -c "import sistema_vendas as s; q='SELECT id, nome, email FROM clientes ORDER BY id /* teste redis */'; s.executar(q,fetch=True); print('Cache gravado:',bool(s.cache.exists(s.cache_key(q,None)))); s.executar(q,fetch=True); print('Cache disponível:',bool(s.cache.exists(s.cache_key(q,None))))"
 ```
 
 Uma consulta repetida poderá gerar Cache HIT, confirmando a recuperação de informações do Redis.
@@ -747,7 +736,6 @@ A segunda versão acrescentou:
 - Redis Cloud para cache.
 - Expiração automática das entradas de cache.
 - Invalidação após alterações no banco.
-- Contadores de Cache HIT e Cache MISS.
 - Tratamento de indisponibilidade do Redis.
 - Atualização das dependências e da documentação.
 

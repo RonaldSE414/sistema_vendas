@@ -761,11 +761,11 @@ O uso do Redis não elimina a necessidade de consultar o PostgreSQL em operaçõ
 
 ## 🎥 Vídeo demonstrativo
 
-### Demonstração da versão atualizada
+### Demonstração do Funcionamento do Sistema junto com Supabase e Redis 
 
 [Assistir ao vídeo no Google Drive](https://drive.google.com/file/d/1YJB2CpyHNNqElXhb6uu-zWLvbBtZNNMS/view?usp=sharing).
 
-### Demonstração da versão original
+### Demonstração do Funcionamneto do Sistema
 
 [Assistir ao vídeo no Google Drive](https://drive.google.com/file/d/1cw7ScubP6mJPa8e_FWyvAA3suQHkgdWi/view?usp=sharing)
 

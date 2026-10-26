@@ -775,7 +775,7 @@ O uso do Redis não elimina a necessidade de consultar o PostgreSQL em operaçõ
 
 ### Demonstração da versão atualizada
 
-------
+[Assistir ao vídeo no Google Drive](https://drive.google.com/file/d/1YJB2CpyHNNqElXhb6uu-zWLvbBtZNNMS/view?usp=sharing).
 
 ### Demonstração da versão original
 
